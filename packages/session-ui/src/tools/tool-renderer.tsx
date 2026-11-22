@@ -1446,6 +1446,7 @@ export function FileDiffFold(props: { children: JSX.Element }) {
 function FileAccordionItem(props: {
   open: boolean
   onOpenChange: (open: boolean) => void
+  pending?: boolean
   type?: string
   header: JSX.Element
   children: JSX.Element
@@ -1485,6 +1486,7 @@ function FileAccordionItem(props: {
           aria-labelledby={`${id}-trigger`}
           data-slot="accordion-content"
           data-expanded=""
+          data-disclosure-pending={props.pending ? "" : undefined}
         >
           <FileDiffFold>{props.children}</FileDiffFold>
         </div>
@@ -1516,6 +1518,7 @@ function ToolFileAccordion(props: {
       <FileAccordionItem
         open={disclosure.open()}
         onOpenChange={disclosure.setOpen}
+        pending={!!props.defer && !disclosure.mounted()}
         header={
           <div data-slot="apply-patch-trigger-content">
             <div data-slot="apply-patch-file-info">
@@ -1644,8 +1647,7 @@ export function toolErrorSubtitle(props: ToolProps, i18n: UiI18n) {
 
   if (props.tool === "read" || props.tool === "edit" || props.tool === "write") return getFilename(input.path ?? "")
 
-  if (props.tool === "list" || props.tool === "glob" || props.tool === "grep")
-    return displayFolder(input.path)
+  if (props.tool === "list" || props.tool === "glob" || props.tool === "grep") return displayFolder(input.path)
 
   if (props.tool === "webfetch") return input.url || undefined
 
@@ -2754,6 +2756,7 @@ ToolRegistry.register({
                   <FileAccordionItem
                     open={disclosure.open()}
                     onOpenChange={disclosure.setOpen}
+                    pending={!disclosure.mounted()}
                     type={file().type}
                     header={
                       <div data-slot="apply-patch-trigger-content">
